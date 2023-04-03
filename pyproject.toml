@@ -1,6 +1,5 @@
 [project]
 name = "tntn"
-version = "23.4.0.dev0"
 description = "Python wrapper library for tunneling apps"
 authors = [
     {name = "dowon", email = "ks2515@naver.com"},

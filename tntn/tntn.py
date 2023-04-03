@@ -60,9 +60,13 @@ class Tunnel:
         for _ in range(lines[self.app]):
             line = process.stdout.readline()
 
-            # jprq invalid token
+            # jprq: invalid token
             if "authentication failed" in line:
-                raise RuntimeError("Invalid token")
+                raise RuntimeError("jprq: invalid token")
+
+            # jprq: port is not running any service
+            if "error: cannot reach server on port" in line:
+                raise RuntimeError(f"jprq: port {port!r} is not running any service")
 
             match = re.search(pattern[self.app], line)
             if match:
@@ -71,7 +75,7 @@ class Tunnel:
                     url = "http://" + url
                 break
         else:
-            raise RuntimeError(f"failed to start {self.app!r}")
+            raise RuntimeError(f"failed to start {self.app!r} on port {port!r}")
 
         urls = Urls(url, process)
         if verbose:
