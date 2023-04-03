@@ -46,7 +46,11 @@ class Tunnel:
                 raise ValueError("jprq requires token")
 
             # always success even if given invalid token, so no need to 'check=True'
-            subprocess.run([info.executable, "auth", token])
+            subprocess.run(
+                [info.executable, "auth", token],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
 
         args = shlex.split(argv[self.app].format(port=port))
         args = [info.executable, *args]
