@@ -30,6 +30,9 @@ class Info:
         self.system = self.system.lower()
         self.machine = self.machine.lower()
 
+        if self.app not in ["bore", "jprq"]:
+            raise ValueError(f"{self.app!r} is not supported.")
+
         download_url = all_urls[self.app]
 
         if self.system not in download_url:
@@ -77,9 +80,8 @@ def download(info: Info | str) -> str:
         total = int(resp.headers.get("Content-Length", 0))
         with tqdm.wrapattr(
             resp, "read", total=total, desc=f"Download {info.app}..."
-        ) as src:
-            with dest.open("wb") as dst:
-                shutil.copyfileobj(src, dst)
+        ) as src, dest.open("wb") as dst:
+            shutil.copyfileobj(src, dst)
 
     if info.url.endswith((".gz", ".zip")):
         shutil.unpack_archive(dest, dest.parent)
