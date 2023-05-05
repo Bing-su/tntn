@@ -11,10 +11,10 @@ from .util import download, get_info
 
 pattern = {
     "jprq": r"(?P<url>https?://\S+\.jprq\.live)",
-    "bore": r"(?P<url>bore\.pub:\d+)",
+    "bore": r"(?P<url>[^/ ]+\.\w+:\d+)",
 }
 
-argv = {"jprq": "http {port}", "bore": "local {port} --to bore.pub"}
+argv = {"jprq": "http {port}", "bore": "local {port}"}
 lines = {"jprq": 5, "bore": 2}
 
 
@@ -29,7 +29,12 @@ class Tunnel:
         self.running: dict[int, Urls] = {}
 
     def __call__(
-        self, port: int, token: str | None = None, verbose: bool = True
+        self,
+        port: int,
+        token: str | None = None,
+        verbose: bool = True,
+        bore_url: str = "bore.pub",
+        bore_port: int | None = None,
     ) -> Urls:
         if port in self.running:
             if verbose:
@@ -53,6 +58,10 @@ class Tunnel:
             )
 
         args = shlex.split(argv[self.app].format(port=port))
+        if self.app == "bore":
+            args += ["--to", bore_url]
+            if bore_port is not None:
+                args += ["--port", str(bore_port)]
         args = [info.executable, *args]
 
         process = subprocess.Popen(
